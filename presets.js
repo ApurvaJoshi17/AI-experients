@@ -1,0 +1,120 @@
+// Plant Care Presets & Starter Catalog — seed data from plant_care_presets_catalog.docx
+const PLANT_PRESETS = [
+  {
+    id: 'preset-golden-pothos',
+    commonName: 'Golden Pothos (Money Plant)',
+    botanicalName: 'Epipremnum aureum',
+    variety: 'Golden Pothos',
+    difficulty: 'Beginner',
+    lightRequirement: 'Bright Indirect Light',
+    locationRecommendation: 'Bright Indoor / Shaded Balcony',
+    isPetSafe: false,
+    petToxicityNote: 'Toxic to cats and dogs (calcium oxalates)',
+    defaultCareIntervals: { wateringDays: 7, mistingDays: 4, fertilizingDays: 30, healthCheckDays: 14 },
+    soilRecommendation: 'Well-draining potting soil with perlite',
+    careTip: 'Tolerates low light and missed watering. Keep elevated away from curious pets.',
+  },
+  {
+    id: 'preset-pilea-peperomioides',
+    commonName: 'Chinese Money Plant',
+    botanicalName: 'Pilea peperomioides',
+    variety: 'Coin Leaf / Pancake Plant',
+    difficulty: 'Easy',
+    lightRequirement: 'Bright Indirect Light',
+    locationRecommendation: 'Bright Indoor Windowsill',
+    isPetSafe: true,
+    petToxicityNote: 'Non-toxic and pet friendly',
+    defaultCareIntervals: { wateringDays: 7, mistingDays: 7, fertilizingDays: 30, healthCheckDays: 14 },
+    soilRecommendation: 'Airy, peat-based fast-draining mix',
+    careTip: 'Rotate pot weekly for even growth. Produces baby plantlets easily.',
+  },
+  {
+    id: 'preset-hibiscus',
+    commonName: 'Tropical Hibiscus',
+    botanicalName: 'Hibiscus rosa-sinensis',
+    variety: 'Flowering Balcony Shrub',
+    difficulty: 'Moderate',
+    lightRequirement: 'Direct Full Sun',
+    locationRecommendation: 'Sunny Balcony / Terrace',
+    isPetSafe: true,
+    petToxicityNote: 'Non-toxic to cats and dogs',
+    defaultCareIntervals: { wateringDays: 2, mistingDays: 0, fertilizingDays: 14, healthCheckDays: 7 },
+    soilRecommendation: 'Rich, moist, slightly acidic soil with compost',
+    careTip: 'Needs 5-6 hours of direct sun to produce vibrant blooms. Inspect buds for pests regularly.',
+  },
+  {
+    id: 'preset-snake-plant',
+    commonName: 'Snake Plant',
+    botanicalName: 'Dracaena trifasciata',
+    variety: 'Laurentii',
+    difficulty: 'Beginner',
+    lightRequirement: 'Low to Bright Indirect Light',
+    locationRecommendation: 'Versatile (Indoor / Shaded Balcony)',
+    isPetSafe: false,
+    petToxicityNote: 'Toxic to cats and dogs (saponins)',
+    defaultCareIntervals: { wateringDays: 14, mistingDays: 0, fertilizingDays: 60, healthCheckDays: 21 },
+    soilRecommendation: 'Coarse succulent & cactus mix with pumice',
+    careTip: 'Extremely drought-tolerant. Do not mist or overwater to avoid root rot.',
+  },
+  {
+    id: 'preset-jade-plant',
+    commonName: 'Jade Plant',
+    botanicalName: 'Crassula ovata',
+    variety: 'Green Jade',
+    difficulty: 'Easy',
+    lightRequirement: 'Direct Sun to Bright Light',
+    locationRecommendation: 'Sunny Balcony / South Windowsill',
+    isPetSafe: false,
+    petToxicityNote: 'Toxic to cats and dogs',
+    defaultCareIntervals: { wateringDays: 12, mistingDays: 0, fertilizingDays: 45, healthCheckDays: 14 },
+    soilRecommendation: 'Fast-draining gritty cactus soil',
+    careTip: 'Thick fleshy leaves store moisture. Water only when soil is thoroughly dry.',
+  },
+  {
+    id: 'preset-lemongrass',
+    commonName: 'Lemongrass',
+    botanicalName: 'Cymbopogon citratus',
+    variety: 'West Indian Lemongrass',
+    difficulty: 'Easy',
+    lightRequirement: 'Direct Full Sun',
+    locationRecommendation: 'Sunny Balcony Planter',
+    isPetSafe: false,
+    petToxicityNote: "Fibrous blades and essential oils can irritate cats' digestive systems",
+    defaultCareIntervals: { wateringDays: 3, mistingDays: 0, fertilizingDays: 30, healthCheckDays: 14 },
+    soilRecommendation: 'Moist, rich, organic-rich potting soil',
+    careTip: 'Thrives in warm full sun. Harvest outer stalks to stimulate fresh growth.',
+  },
+];
+
+// Maps the catalog's descriptive light_requirement text to the app's 4 sunlight options.
+const LIGHT_REQUIREMENT_MAP = {
+  'Bright Indirect Light': 'Bright Indirect',
+  'Direct Full Sun': 'Direct Sun',
+  'Low to Bright Indirect Light': 'Low Light',
+  'Direct Sun to Bright Light': 'Direct Sun',
+};
+
+function presetToPlantDraft(preset) {
+  const intervals = preset.defaultCareIntervals;
+  const location = /balcony/i.test(preset.locationRecommendation) ? 'Balcony' : 'Living Room';
+  const notesParts = [
+    `${preset.botanicalName} — ${preset.variety} (${preset.difficulty})`,
+    `Soil: ${preset.soilRecommendation}`,
+    `Care tip: ${preset.careTip}`,
+    `Pet safety: ${preset.petToxicityNote}`,
+  ];
+  return {
+    name: preset.commonName,
+    species: preset.botanicalName,
+    location,
+    sunlight: LIGHT_REQUIREMENT_MAP[preset.lightRequirement] || 'Bright Indirect',
+    petSafety: preset.isPetSafe ? 'Pet Friendly' : 'Toxic to Pets',
+    intervals: {
+      watering: intervals.wateringDays,
+      misting: intervals.mistingDays || null,
+      fertilizing: intervals.fertilizingDays || null,
+      healthCheck: intervals.healthCheckDays,
+    },
+    notes: notesParts.join('\n'),
+  };
+}

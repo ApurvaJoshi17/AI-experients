@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>🌿 Plant Care Assistant</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>🌿 Plant Care Assistant</h1>
+    <div class="header-actions">
+      <button id="notifyBtn" class="icon-btn svg-icon-btn" title="Enable reminders" aria-label="Toggle reminders">
+        <svg viewBox="0 0 24 24" class="svg-icon"><path d="M12 3a5 5 0 0 0-5 5v3.59a1 1 0 0 1-.29.7L5 14v1h14v-1l-1.71-1.71a1 1 0 0 1-.29-.7V8a5 5 0 0 0-5-5Z"/><path d="M9.5 17a2.5 2.5 0 0 0 5 0"/></svg>
+      </button>
+      <button id="exportBtn" class="icon-btn svg-icon-btn" title="Export data" aria-label="Export data">
+        <svg viewBox="0 0 24 24" class="svg-icon"><path d="M12 3v11M8 7l4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+      </button>
+      <button id="importBtn" class="icon-btn svg-icon-btn" title="Import data" aria-label="Import data">
+        <svg viewBox="0 0 24 24" class="svg-icon"><path d="M12 3v11M8 10l4 4 4-4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+      </button>
+      <input type="file" id="importFile" accept="application/json" hidden />
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="dashboard">Dashboard <span id="dashboardBadge" class="nav-badge hidden">0</span></button>
+    <button class="tab-btn" data-tab="plants">My Plants</button>
+  </nav>
+
+  <main id="app">
+    <!-- Dashboard -->
+    <section id="dashboard" class="tab-panel active">
+      <div class="greeting">
+        <h2 id="greetingText">Hi, Appy 👋</h2>
+        <button id="editNameBtn" class="icon-btn ghost" title="Edit your name">✏️</button>
+      </div>
+      <div id="dashboardEmpty" class="empty-state hidden">
+        <p>No plants yet. Add your first plant to see your daily care tasks here! 🌱</p>
+        <button class="primary-btn" data-goto="plants">Add a Plant</button>
+      </div>
+      <div id="taskGroups"></div>
+    </section>
+
+    <!-- Plants -->
+    <section id="plants" class="tab-panel">
+      <div class="section-header">
+        <h2>My Plants</h2>
+        <button id="addPlantBtn" class="primary-btn">+ Add Plant</button>
+      </div>
+      <div id="plantList" class="plant-list"></div>
+      <div id="plantsEmpty" class="empty-state hidden">
+        <p>Your garden is empty. Add a plant to get started! 🌱</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Plant Form Modal -->
+  <div id="plantModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="plantModalTitle">Add Plant</h2>
+        <button class="close-btn" data-close="plantModal">✕</button>
+      </div>
+      <form id="plantForm">
+        <input type="hidden" id="plantId" />
+        <label id="presetField">Start from a Preset (optional)
+          <select id="presetSelect">
+            <option value="">-- Choose a plant preset --</option>
+          </select>
+        </label>
+        <label>Plant Name / Nickname *
+          <input type="text" id="plantName" required maxlength="60" />
+        </label>
+        <label>Species / Variety
+          <input type="text" id="plantSpecies" maxlength="60" />
+        </label>
+        <label>Location
+          <select id="plantLocation">
+            <option>Living Room</option>
+            <option>Bedroom</option>
+            <option>Balcony</option>
+            <option>Kitchen</option>
+            <option>Bathroom</option>
+            <option>Office</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <label>Sunlight Level
+          <select id="plantSunlight">
+            <option>Direct Sun</option>
+            <option>Partial Sun</option>
+            <option>Bright Indirect</option>
+            <option>Low Light</option>
+          </select>
+        </label>
+        <label>Pet Safety
+          <select id="plantPetSafety">
+            <option value="Pet Friendly">Pet Friendly</option>
+            <option value="Toxic to Pets">Toxic to Pets</option>
+            <option value="Unknown">Unknown</option>
+          </select>
+        </label>
+
+        <fieldset class="interval-group">
+          <legend>Care Intervals (days)</legend>
+          <div class="grid-2">
+            <label>Watering *
+              <input type="number" id="wateringInterval" min="1" required value="7" />
+            </label>
+            <label>Misting (optional)
+              <input type="number" id="mistingInterval" min="1" placeholder="—" />
+            </label>
+            <label>Fertilizing (optional)
+              <input type="number" id="fertilizingInterval" min="1" placeholder="—" />
+            </label>
+            <label>Health Check
+              <input type="number" id="healthCheckInterval" min="1" required value="14" />
+            </label>
+          </div>
+        </fieldset>
+
+        <label>Notes / Special Care Instructions
+          <textarea id="plantNotes" rows="3" maxlength="500"></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" id="deletePlantBtn" class="danger-btn hidden">Delete</button>
+          <button type="button" id="archivePlantBtn" class="secondary-btn hidden">Archive</button>
+          <button type="submit" class="primary-btn">Save Plant</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Health Check Modal -->
+  <div id="healthModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Health Check</h2>
+        <button class="close-btn" data-close="healthModal">✕</button>
+      </div>
+      <form id="healthForm">
+        <input type="hidden" id="healthPlantId" />
+        <label>Inspection Date
+          <input type="date" id="healthDate" required />
+        </label>
+        <label>Overall Condition
+          <select id="healthCondition">
+            <option>Thriving</option>
+            <option>Healthy</option>
+            <option>Needs Attention</option>
+            <option>Critical</option>
+          </select>
+        </label>
+        <label>Observations / Notes
+          <textarea id="healthNotes" rows="3" placeholder="e.g., yellow leaves, new growth, pest check, repotting needed"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="submit" class="primary-btn">Save Health Check</button>
+        </div>
+      </form>
+      <div class="health-history">
+        <h3>History</h3>
+        <ul id="healthHistoryList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="presets.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
